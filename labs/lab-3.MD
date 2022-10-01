@@ -94,6 +94,40 @@ stud@it-20:~$ ls
 4444.txt  Desktop  Downloads  file.txt.save  lll.gz     Pictures  snap    Videos
 stud@it-20:~$ cat 4444.txt
 hello
+stud@it-20:~$ ssh 192.168.2.140
+stud@192.168.2.140's password: 
+Welcome to Ubuntu 22.04.1 LTS (GNU/Linux 5.15.0-47-generic x86_64)
+
+ * Documentation:  https://help.ubuntu.com
+ * Management:     https://landscape.canonical.com
+ * Support:        https://ubuntu.com/advantage
+
+149 updates can be applied immediately.
+65 of these updates are standard security updates.
+To see these additional updates run: apt list --upgradable
+
+Last login: Sat Oct  1 10:04:39 2022 from 192.168.2.224
+stud@it-10:~$ ls
+1         Documents     filesh_zh  gnuplot    Kochev    Public     test1
+4444.txt  Downloads     _file.txt  hello      misha     snap       Untitled.ipynb
+and       f5            file.txt   hello.txt  Music     spasibo    Videos
+Desktop   file2345.txt  fl.gz      homestud   Pictures  Templates  zh_hz.gz
+stud@it-10:~$ mkdir ~/test/
+stud@it-10:~$ ls
+1         Documents     filesh_zh  gnuplot    Kochev    Public     test            zh_hz.gz
+4444.txt  Downloads     _file.txt  hello      misha     snap       test1
+and       f5            file.txt   hello.txt  Music     spasibo    Untitled.ipynb
+Desktop   file2345.txt  fl.gz      homestud   Pictures  Templates  Videos
+stud@it-10:~$ cp 4444.txt ~/test/
+stud@it-10:~/test$ exit
+logout
+Connection to 192.168.2.140 closed.
+stud@it-20:~$ scp -r 192.168.2.140:~/test/ .
+stud@192.168.2.140's password: 
+4444.txt                                                                                                                                                                 100%    6    17.5KB/s   00:00
+stud@it-20:~$ cd test
+stud@it-20:~/test$ ls
+4444.txt
 
 ```
 ### 9. **Дневник откладки**
