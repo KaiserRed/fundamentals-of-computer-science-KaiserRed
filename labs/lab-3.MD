@@ -143,6 +143,49 @@ stud@it-20:~/test$ ls
 | ------ | ------ | ------ | ------ | ------ | ------ | ------ |
 | 1 | дом. | 2809.22 | 13:00 | Выполнение лабораторной работы | - | - |    
 ## 10. Замечания автора по существу работы
-file -i, xxd -b
+```
+stud@it-20:~$ ssh 192.168.2.140
+The authenticity of host '192.168.2.140 (192.168.2.140)' can't be established.
+ED25519 key fingerprint is SHA256:I6maFdaVFjUtE4EzhyP3nJUGC0bDgxdK1nexQWZWkWg.
+This key is not known by any other names
+Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
+Warning: Permanently added '192.168.2.140' (ED25519) to the list of known hosts.
+stud@192.168.2.140's password: 
+Welcome to Ubuntu 22.04.1 LTS (GNU/Linux 5.15.0-47-generic x86_64)
+
+ * Documentation:  https://help.ubuntu.com
+ * Management:     https://landscape.canonical.com
+ * Support:        https://ubuntu.com/advantage
+
+149 updates can be applied immediately.
+65 of these updates are standard security updates.
+To see these additional updates run: apt list --upgradable
+
+Last login: Sat Oct  1 09:52:41 2022 from 127.0.0.1
+stud@it-10:~$ ls
+1         and      Documents  f5            filesh_zh  fl.gz    homestud  misha  Pictures  snap     Templates  Untitled.ipynb  zh_hz.gz
+4444.txt  Desktop  Downloads  file2345.txt  file.txt   gnuplot  Kochev    Music  Public    spasibo  test1      Videos
+stud@it-10:~$ exit
+logout
+Connection to 192.168.2.140 closed.
+stud@it-20:~$ scp hello.txt 192.168.2.140:`pwd`
+stud@192.168.2.140's password: 
+hello.txt    
+stud@it-20:~$ scp 192.168.2.140:~/4444.txt .
+stud@192.168.2.140's password: 
+4444.txt                                                           100%    6     4.8KB/s   00:00    
+
+stud@it-20:~$ echo да > f.txt
+stud@it-20:~$ cat f.txt
+да
+stud@it-20:~$ file -i f.txt
+f.txt: text/plain; charset=utf-8
+stud@it-20:~$ xxd -b f.txt
+00000000: 11010000 10110100 11010000 10110000 00001010           .....
+stud@it-20:~$ iconv -c -f utf-8 -t utf-16 f.txt
+��40
+
+```
+
 ## 11. Выводы
 Были изучены сетевые команды консоли ОС UNIX
