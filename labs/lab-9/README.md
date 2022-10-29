@@ -48,14 +48,15 @@ l<sub>k+1</sub>=|i<sub>k</sub>-j<sub>k</sub>+l<sub>k</sub>-k| * sign(i<sub>k</su
 1. Скомпилируем при помощи команды gcc программы main.c и hmm.c.
 2. Компилятор сообщит об ошибке, если она присутствует.
 3. Запустим файл a.out через команду ./a.out.
-4. Напишем таблицу с тестами.
+4. Напишем таблицу с тестами.   
 Тесты:
-| k| i |  j | l |
-| ------ | ------ | ------ | ------ |
-| 0|30|-31|-31|
-| 1|28|-19|-28|   
-| 2|17|-11|-17|   
-| 3|8|6|-8|
+
+|k|i|j|l|
+|--|--|--|--|
+|0|30|-31|-31|
+|1|28|-19|-28|   
+|2|17|-11|-17|   
+|3|8|6|-8|   
 Программа:
 ```
 #include <stdio.h>
@@ -74,13 +75,14 @@ int main(void){
         i=(max(min(ik+jk-lk-k,ik-jk+lk-k), min(k+ik-jk-lk, k-ik-jk+lk)));
         j=(jk+lk*sign(jk)%20);
         l=abs(ik-jk+lk-k)*sign(ik)*sign(jk);
+        printf("Step X Y Movement %d %d %d %d\n",k,i,j,l);
         if ((i-10)*(i-10)+(j-10)*(j-10)<=25){  
-            printf("Попадание в заданную область %d %d %d %d\n", k,i,j,l);
+            printf("Point has reached destination %d %d %d %d\n", k,i,j,l);
             return 0;
         }
      
     }
-    printf("Не попал%d %d %d\n",i,j,l);
+    printf("Poin has not reached destination%d %d %d\n",i,j,l);
     return 0;
     
 }
@@ -111,7 +113,7 @@ int sign(int a) {
     else {
         return -1;
     }
-}  
+}
 ```
   
 
@@ -122,7 +124,12 @@ int sign(int a) {
 ```
 alexey@alexey-VirtualBox:~$ gcc -std=c18 lab9.c
 alexey@alexey-VirtualBox:~$ ./a.out
-Попадание в заданную область 3 8 6 -8
+Step X Y Movement 0 30 -31 -32
+Step X Y Movement 1 28 -19 -28
+Step X Y Movement 2 17 -11 -17
+Step X Y Movement 3 8 6 -8 
+Poin has reach destination 3 8 6 -8
+  
 ```
 ## 9. Дневник отладки должен содержать дату и время сеансов отладки и основные события (ошибки в сценарии и программе, нестандартные ситуации) и краткие комментарии к ним. В дневнике отладки приводятся сведения об использовании других ЭВМ, существенном участии преподавателя и других лиц в написании и отладке программы.
 
