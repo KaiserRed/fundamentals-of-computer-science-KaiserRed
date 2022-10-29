@@ -83,6 +83,8 @@ int main(void) {
    }
   return 0;
 }
+```
+```
 alexey@alexey-VirtualBox:~$ gcc -std=c18 hmm.c
 alexey@alexey-VirtualBox:~$ ./a.out
 55
