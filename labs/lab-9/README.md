@@ -90,21 +90,11 @@ int main(void){
     
 }
 int max(int a, int b) {
-    if (a > b) {
-        return a;
-    }
-    else {
-        return b;
-    }
+    return a < b ? b : a
 }
 
 int min(int a, int b) {
-    if (a > b) {
-        return b;
-    }
-    else {
-        return a;
-    }
+    return a > b ? b : a
 }
 int sign(int a) {
     if (a > 0) {
