@@ -56,7 +56,8 @@ l<sub>k+1</sub>=|i<sub>k</sub>-j<sub>k</sub>+l<sub>k</sub>-k| * sign(i<sub>k</su
 |0|30|-31|-32|
 |1|28|-18|-28|   
 |2|16|-8|-16|   
-|3|5|11|-5|   
+|3|5|11|-5|
+   
 Программа:
 ```
 #include <stdio.h>
