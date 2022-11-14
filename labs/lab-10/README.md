@@ -10,7 +10,7 @@
 
 <b>Входной контроль знаний с оценкой 5:</b> <ins></ins>
 
-<b>Отчет сдан</b> «29» <ins>октября<ins>2022</ins> г., <b>итоговая оценка</b> <ins>5 (отлично)</ins>
+<b>Отчет сдан</b> «12» <ins>ноября<ins>2022</ins> г., <b>итоговая оценка</b> <ins>5 (отлично)</ins>
 
 <b>Подпись преподавателя:</b> ________________  
 
@@ -250,9 +250,65 @@ Breakpoint 2 at 0x555555555189: file lab9.c, line 11.
 
 | № |  Лаб. или дом. | Дата | Время | Событие | Действие по исправлению | Примечание |
 | ------ | ------ | ------ | ------ | ------ | ------ | ------ |
-| 1 | дом. | 2809.22 | 13:00 | Выполнение лабораторной работы | - | - |    
+| 1 | дом. | 12.11.22 | 17:42 | Выполнение лабораторной работы | - | - |    
 ## 10. Замечания автора по существу работы
+По ходу защиты лабораторной работы было дано задание:
+Остановить программу на 15 итерации: 
+```
+alexey@alexey-VirtualBox:~$ gcc -g -std=c18 lab9.c
+alexey@alexey-VirtualBox:~$ gdb ./a.out
+GNU gdb (Ubuntu 12.0.90-0ubuntu1) 12.0.90
+Copyright (C) 2022 Free Software Foundation, Inc.
+License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.
+Type "show copying" and "show warranty" for details.
+This GDB was configured as "x86_64-linux-gnu".
+Type "show configuration" for configuration details.
+For bug reporting instructions, please see:
+<https://www.gnu.org/software/gdb/bugs/>.
+Find the GDB manual and other documentation resources online at:
+    <http://www.gnu.org/software/gdb/documentation/>.
 
+For help, type "help".
+Type "apropos word" to search for commands related to "word"...
+Reading symbols from ./a.out...
+(gdb) br 21
+Breakpoint 1 at 0x12cf: file lab9.c, line 21.
+(gdb) condition 1 k == 15
+(gdb) run
+Starting program: /home/alexey/a.out 
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/lib/x86_64-linux-gnu/libthread_db.so.1".
+Step X Y Movement 0 30 -31 -32
+Step X Y Movement 1 28 -18 -28
+Step X Y Movement 2 16 -8 -16
+Step X Y Movement 3 5 11 -5
+Point has reached destination 3 5 11 -5
+Step X Y Movement 4 -15 10 15
+Step X Y Movement 5 -25 20 -15
+Step X Y Movement 6 -24 -1 -66
+Step X Y Movement 7 -34 -2 96
+Step X Y Movement 8 -120 -26 56
+Step X Y Movement 9 -141 -51 47
+Step X Y Movement 10 -127 -58 53
+Step X Y Movement 11 -111 -72 27
+Step X Y Movement 12 -54 -81 24
+Step X Y Movement 13 16 -88 38
+Step X Y Movement 14 80 -102 -128
+Step X Y Movement 15 39 -89 -39
+
+Breakpoint 1, main () at lab9.c:21
+21	        if ((((i - 10) * (i - 10)) + ((j - 10) * (j - 10)) >= 25) & (((i - 10) * (i - 10)) + ((j - 10) * (j - 10)) <=100)){  
+(gdb) quit
+A debugging session is active.
+
+	Inferior 1 [process 3469] will be killed.
+
+Quit anyway? (y or n) y
+alexey@alexey-VirtualBox:~$ 
+
+```
 ## 11. Выводы
 Был изучен способ отладки программ, написанных на языке Си. 
   
