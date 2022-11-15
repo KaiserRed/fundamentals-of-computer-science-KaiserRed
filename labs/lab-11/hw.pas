@@ -1,4 +1,4 @@
-program n_1; *fsfs*
+program n_1; *beginning of the file*
 var s, a: integer; 
 begin 
 readln (a);  cs cscs 
