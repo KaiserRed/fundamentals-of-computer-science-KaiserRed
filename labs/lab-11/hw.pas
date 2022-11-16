@@ -1,7 +1,7 @@
 program n_1; *beginning of the file*
 var s, a: integer; 
 begin 
-readln (a);  cs cscs 
+readln (a);  
 a:=a div 2; 
 end.  *end of the file *
 {This is the simpliest program,
