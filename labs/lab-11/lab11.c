@@ -17,7 +17,6 @@ int Word_count() {
 enum State state = OUTSIDE;
     char c;
     int t = 0, q = 0, e = 1;
-    /*while ((c = getchar()) != EOF){*/
     for (c = getchar(); c != EOF; c = getchar())
         switch (state) {            
             case INSIDE:
