@@ -9,7 +9,13 @@ enum State {
     ONE,
     TWO
 };
+int Digit_count ();
+
 int main () {
+    printf("%c\n", Digit_count());
+    return 0;
+    }
+int Digit_count () {
     char c;
     enum State state = ZERO;
     int t = 0, a = 0, b = 0, g = 0, m = 0;
@@ -55,18 +61,17 @@ int main () {
             }
 
         if ((t == 1) & (q.i < q.j) & (q.j < q.l)){
-            printf("= %c %c %c ", q.i, q.j, q.l);
+            printf("= %c %c %c\n", q.i, q.j, q.l);
             t = 0;
         }
         if ((b == 2) & (s.i < s.j) & (s.j < s.l)){
-            printf("= %c %c %c ", s.i, s.j, s.l);
+            printf("= %c %c %c\n", s.i, s.j, s.l);
             b = 0;
         }
         if ((m == 3) & (isdigit(y.i) != 0) & (y.i < y.j) & (y.j < y.l)){
-            printf("= %c %c %c ", y.i, y.j, y.l);
+            printf("= %c %c %c\n", y.i, y.j, y.l);
             m = 0;
         }
     }
     return 0;
 }
-
