@@ -1,40 +1,60 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
+enum State {
+    OUTSIDE,
+    INSIDE,
+    ASTERISK
+};
+int Word_count();
 
 int main () {
-    char c;
-    int a = 0, k = 1, i, t = 0, q = 0, e = 1;
-    while ((c = getchar()) != EOF){
-        if ((c == '{') & (k == 1) & (e == 1)) {
-            k = 2;
-            a = t;
-        }
-        if ((k == 2) & (c == '}')){
-            k = 1;
-        }
-        if ((isalpha(c) != 0) & (k == 2)) { 
-            q = 1;
-        }
-        if ((isspace(c) != 0) & (q == 1)){
-            q = 0;
-            t++;
-        }
-        if ((c == '*') & (k == 1) & (e == 1))
-            e = 2;
-        else if ((e == 2) & (c == '\n')){
-            e = 1;   
-        }
-        if ((isalpha(c) != 0) & (e == 2)) { 
-            q = 1;
-        }
-    }
-    
-    if (k == 2){
-        printf("Comment is still open\n");
-        return 0;
-    }
-    printf("Word count  = %d\n", t);
+    printf("Word count =  %d\n", Word_count());
     return 0;
 }
 
+int Word_count() {
+enum State state = OUTSIDE;
+    char c;
+    int t = 0, q = 0, e = 1;
+    /*while ((c = getchar()) != EOF){*/
+    for (c = getchar(); c != EOF; c = getchar())
+        switch (state) {            
+            case INSIDE:
+                if (c == '}'){
+                    state = OUTSIDE;
+                    e = 1;
+                 }
+                if (isalnum(c) != 0){
+                    q = 1;
+                }
+                if (((isspace(c) != 0) | (c =='}')) & (q == 1)){
+                    q = 0;
+                    t++;
+                }
+                break;
+            case ASTERISK: 
+                if ((c == '\n') & (e != 0)){
+                    state = OUTSIDE;
+                }
+                if (isalnum(c) != 0)
+                    q = 1;
+                if (((isspace(c) != 0) | (c =='*')) & (q == 1)){
+                    q = 0;
+                    t++;
+                }
+                if (c == '*')
+                    state = OUTSIDE;
+                break;
+            case OUTSIDE:
+                if (c == '{'){
+                    state = INSIDE;
+                    e = 0;
+                }
+                if ((c == '*'))
+                    state = ASTERISK;
+                break;
+        }
+    
+    return t;
+}
