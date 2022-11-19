@@ -48,64 +48,80 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
+typedef struct{
+    char i, j, l;
+}three;
 enum State {
-    OUTSIDE,
-    INSIDE,
-    ASTERISK
+    ZERO,
+    ONE,
+    TWO
 };
-int Word_count();
+int Digit_count ();
 
 int main () {
-    printf("Word count =  %d\n", Word_count());
+    printf("%c\n", Digit_count());
     return 0;
-}
-
-int Word_count() {
-enum State state = OUTSIDE;
+    }
+int Digit_count () {
     char c;
-    int t = 0, q = 0, e = 1;
-    /*while ((c = getchar()) != EOF){*/
-    for (c = getchar(); c != EOF; c = getchar())
-        switch (state) {            
-            case INSIDE:
-                if (c == '}'){
-                    state = OUTSIDE;
-                    e = 1;
-                 }
-                if (isalnum(c) != 0){
-                    q = 1;
-                }
-                if (((isspace(c) != 0) | (c =='}')) & (q == 1)){
-                    q = 0;
-                    t++;
+    enum State state = ZERO;
+    int t = 0, a = 0, b = 0, g = 0, m = 0;
+    three q = {0, 0, 0};
+    three s = {0, 0, 0};
+    three y = {0, 0, 0};
+    for (c = getchar(); c != EOF; c = getchar()){
+        switch (state) {
+            case ZERO:
+                if ((isdigit(c) != 0)){
+                    q.i = c;
+                    if ((b == 1)){
+                        s.l = c;
+                        b = 2;
+                    }
+                    if ((int) y.i < (int) c){
+                        y.j = c;
+                        m = 2;
+                    }
+                    state = ONE;
                 }
                 break;
-            case ASTERISK: 
-                if ((c == '\n') & (e != 0)){
-                    state = OUTSIDE;
-                }
-                if (isalnum(c) != 0)
-                    q = 1;
-                if (((isspace(c) != 0) | (c =='*')) & (q == 1)){
-                    q = 0;
-                    t++;
-                }
-                if (c == '*')
-                    state = OUTSIDE;
+           case ONE:
+               s.i = c;
+               q.j = c;
+               state = TWO;
+               if ((m == 2)){
+                   m = 3;
+                   y.l = c;
+               }
+               break;
+          case TWO:
+                y.i = c;
+                m = 1;
+                 q.l = c;
+                 t = 1;
+                 state = ZERO;
+                  if ((int) s.i < (int) c){
+                        s.j = c;
+                        b = 1;
+                   } 
                 break;
-            case OUTSIDE:
-                if (c == '{'){
-                    state = INSIDE;
-                    e = 0;
-                }
-                if ((c == '*'))
-                    state = ASTERISK;
-                break;
+            }
+
+        if ((t == 1) & (q.i < q.j) & (q.j < q.l)){
+            printf("= %c %c %c\n", q.i, q.j, q.l);
+            t = 0;
         }
-    
-    return t;
-}
-                                                      
+        if ((b == 2) & (s.i < s.j) & (s.j < s.l)){
+            printf("= %c %c %c\n", s.i, s.j, s.l);
+            b = 0;
+        }
+        if ((m == 3) & (isdigit(y.i) != 0) & (y.i < y.j) & (y.j < y.l)){
+            printf("= %c %c %c\n", y.i, y.j, y.l);
+            m = 0;
+        }
+    }
+    return 0;
+}                                                    
 ```
 Пункты 1-7 отчета составляются строго до начала лабораторной работы.
 Допущен к выполнению работы.  
