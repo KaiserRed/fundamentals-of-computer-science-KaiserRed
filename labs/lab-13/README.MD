@@ -121,7 +121,21 @@ char Repeat_of_vowels(){
 <b>Подпись преподавателя</b> ________________
 ### 8. **Протокол**
 ```
+alexey@alexey-VirtualBox:~$ echo MAI is the best University > h.txt
+alexey@alexey-VirtualBox:~$ cat h.txt
+MAI is the best University
+alexey@alexey-VirtualBox:~$ gcc -std=c18 lab13.c
+alexey@alexey-VirtualBox:~$ ./a.out < h.txt
+Repeat of vowel i
+                                           
+alexey@alexey-VirtualBox:~$ echo aba > h.txt
+alexey@alexey-VirtualBox:~$ ./a.out < h.txt
+Repeat of vowel a
 
+alexey@alexey-VirtualBox:~$ echo I am a student > h.txt
+alexey@alexey-VirtualBox:~$ ./a.out < h.txt
+There are not similar vowels
+alexey@alexey-VirtualBox:~$
 ```
 ## 9. Дневник отладки должен содержать дату и время сеансов отладки и основные события (ошибки в сценарии и программе, нестандартные ситуации) и краткие комментарии к ним. В дневнике отладки приводятся сведения об использовании других ЭВМ, существенном участии преподавателя и других лиц в написании и отладке программы.
 
