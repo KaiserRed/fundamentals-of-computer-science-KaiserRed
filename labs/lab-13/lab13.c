@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <ctype.h>
+#include <stdbool.h>
 
 #define VOWELS ( \
     1U << ('a' - 'a') | \
@@ -8,11 +9,11 @@
     1U << ('o' - 'a') | \
     1U << ('u' - 'a') \
 )
-char Repeat_of_vowels();
-enum State{
+bool repeat_of_vowels();
+typedef enum{
     OUT,
     IN
-};
+} State;
 
 unsigned int char_to_set(char c) {
     c = tolower(c);
@@ -23,26 +24,28 @@ unsigned int char_to_set(char c) {
      }
 }
 int main() {
-    printf("%c\n", Repeat_of_vowels());
+    if (repeat_of_vowels() == 1){
+        printf("Repeat of vowel\n");
+    }else
+        printf("There are not similar vowels\n");
     return 0;
 }    
 
-char Repeat_of_vowels(){
-    enum State state = OUT;
+bool repeat_of_vowels(){
+    State state = OUT;
     int  c;
     unsigned int set = 0;
     while ((c = getchar()) != EOF){
         switch (state) {
         case OUT:
             set = 0;
-            if (isspace((c) || (c == '\t') || (c == '\n'))
+            if (isspace(c) || (c == '\t') || (c == '\n'))
                 break;
             state = IN;
         case IN:
-            if (isalpha((c)){
+            if (isalpha(c)){
                 if (set & char_to_set(c)){
-                    printf("Repeat of vowel %c\n",(char) c);
-                    return 0;
+                    return 1;
                 }
                 set = set | char_to_set(c);
                 set = set & VOWELS;
@@ -54,6 +57,5 @@ char Repeat_of_vowels(){
             }
         }
     }
-    printf("There are not similar vowels");
     return 0;
 }
