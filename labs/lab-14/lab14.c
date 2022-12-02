@@ -10,7 +10,6 @@ int main(){
         for (int j = 0; j != n; ++j)
             scanf("%d", &m[i][j]);
     int l = n;
-    int p = 0;
     int i = l - 1, j = l - 1;
     while (i != 0 & j != 0){
         j = i - 1;
