@@ -48,8 +48,8 @@
 | № | Ввод | Вывод |
 | ------ | ------ | ------ |
 | 1 | da | There are not similar vowels |
-| 2 | HOWTOWIN | Repeat of vowel O|
-| 3 | MAI is the best University | Repeat of vowel i |
+| 2 | HOWTOWIN | Repeat of vowel |
+| 3 | MAI is the best University | Repeat of vowel  |
 | 4 | 12345678 | There are not similar vowels |
 
 Код:
