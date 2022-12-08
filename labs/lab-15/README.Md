@@ -200,7 +200,13 @@ alexey@alexey-VirtualBox:~$
 #include <stdio.h>
 
 enum { maxn = 100 };
-int main(void){
+void matrix();
+
+int main (void) {
+    matrix();
+    return 0;
+}
+void matrix(){
     int m[maxn][maxn];
     int n, i, j;
     int two, repeat_1;
@@ -254,7 +260,6 @@ int main(void){
             }
     }
         
-    return 0;
 }
 
 
