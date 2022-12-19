@@ -69,28 +69,39 @@
 ```
 #include <stdio.h>
 
-enum { maxn = 100 };
+enum { maxn = 10 };
+void matrix_input(int n, int (*m)[n]);
+void matrix_output(int n, int (*m)[n]);
 
-int main(){
+int main(void){
     int m[maxn][maxn];
     int n;
     scanf("%d", &n);
+    matrix_input(n, (int (*)[n]) m);
+    matrix_output(n, (int (*)[n]) m);
+    return 0;
+} 
+
+void matrix_input(int n, int (*m)[n]){
     for (int i = 0; i != n; ++i)
         for (int j = 0; j != n; ++j)
             scanf("%d", &m[i][j]);
+}
+
+void matrix_output(int n, int (*m)[n]){
     int l = n;
     int i = l - 1, j = l - 1;
     while (i != 0 & j != 0){
         j = i - 1;
         i = l;
         if (i != n)
-            printf("%d\n", m[i][j]);
+            printf("%d ", m[i][j]);
         while (j != l & j < n){
             i-=1;
             j+=1;
             if (j == n)
                 break;
-            printf("%d\n", m[i][j]);
+            printf("%d ", m[i][j]);
         }
         if (i == 0){
             l-=1;
@@ -99,9 +110,8 @@ int main(){
     
     }
     putchar('\n');
-    return 0;
-}  
-                                 
+}
+                                
 ```
 Пункты 1-7 отчета составляются строго до начала лабораторной работы.
 Допущен к выполнению работы.  
@@ -124,7 +134,257 @@ alexey@alexey-VirtualBox:~$ ./a.out < h.txt
 | ------ | ------ | ------ | ------ | ------ | ------ | ------ |
 | 1 | дом. | 03.12.22 | 14:00 | Выполнение лабораторной работы | - | - |    
 ## 10. Замечания автора по существу работы
-—
+Во время защиты было дано задание:
+1) пусть есть квадратная матрица
+2) рисуем в ней левую z.
+3) остается две треугольные области
+4) выделяем в каждой настолько большой квадрат, насколько можно.
+5) запускаемся рекурсивно два раза (т.е. от каждого), но если была левая z, то будет правая. Т.е. идем в пункт 1.
+6) остается 4 треугольные области. Идем в пункт 4.
+```
+#include <stdio.h>
+
+enum { maxn = 100 };
+void matrix_input(int n, int (*m)[n]);
+void first_left_z(int Size,int dot, int dot_2, int square, int triangle, int n, int (*m)[n]);
+void left_z(int Size, int dot, int dot_2, int square, int triangle, int n, int (*m)[n]);
+void right_z(int Size, int dot, int dot_2, int square, int triangle, int n, int (*m)[n]);
+void reversed_right_z(int Size, int dot, int dot_2, int square, int triangle, int n, int (*m)[n]);
+void reversed_left_z(int Size, int dot, int dot_2, int square, int triangle, int n, int (*m)[n]);
+
+int main(void){
+    int m[maxn][maxn];
+    int n, Size, dot, dot_2, square, triangle;
+    scanf("%d", &n);
+    matrix_input(n, (int (*)[n]) m);
+    first_left_z(Size, dot, dot_2, square, triangle, n, (int (*)[n]) m);
+    return 0;
+} 
+
+void matrix_input(int n, int (*m)[n]){
+    for (int i = 0; i != n; ++i)
+        for (int j = 0; j != n; ++j)
+            scanf("%d", &m[i][j]);
+}
+
+void first_left_z(int Size, int dot, int dot_2, int square, int triangle, int n, int (*m)[n]){
+    int i = 0, j;
+    for (j = 0; j != n; ++j)
+        printf("%d ", m[i][j]);
+    --j;
+    for (i = 1; i != (n - 1); ++i){
+        --j;
+        printf("%d ", m[i][j]);
+    }
+    for (j = 0; j != n; ++j)
+        printf("%d ", m[i][j]);
+    square = (n - 1) / 2;
+    Size = n ;
+    dot_2 = square - 1;
+    dot = 1;
+    
+    if (square > 0){
+        triangle = Size - square - 2;
+        right_z(Size, dot, dot_2, square, triangle, n, (int (*)[n]) m);
+        dot = dot + square - 1;
+        dot_2 = dot_2 - square + 1;
+        dot = dot + square - (Size % 2);
+        dot_2 = dot_2 + Size - square;
+        reversed_right_z(Size, dot, dot_2, square, triangle, n, (int (*)[n]) m);
+    } 
+    putchar('\n');
+}
+
+void right_z(int Size, int dot, int dot_2, int square, int triangle, int n, int (*m)[n]){
+    int i = dot;
+    int Const1, Const2, Const3, Const4, triangle_Const;
+    int j = dot_2;
+    dot_2 = j;
+    dot = i;
+    for (int k = 0; k != square; ++k){
+        printf("%d ", m[i][j]);
+        --j;
+    }
+    if (((square + 1) / 2) > 0) {
+        ++j;
+        for (int k = 0; k != (square - 1); ++k){
+            ++j;
+            ++i;
+            printf("%d ", m[i][j]);
+        }
+        for (int k = 0; k != (square - 1); ++k){
+            --j;
+            printf("%d ", m[i][j]);
+        }
+        Const1 = dot;
+        Const3 = dot_2;
+        Const4 = Size;
+        Size = square;
+        square = ((square - 1) / 2);
+        dot_2 = dot_2 - square + 1;
+        dot = i - Size + 2;
+        triangle_Const = triangle;
+        triangle = Size - square - 2;
+        if (square > 0){
+            left_z(Size, dot, dot_2,square, triangle, n, (int (*)[n]) m);
+            Const2 = square;
+            dot = i - 1;
+            dot_2 = j + square - 1;  
+            reversed_left_z(Size, dot, dot_2, square, triangle, n, (int (*)[n]) m);
+        }
+    }
+    triangle = triangle_Const;
+    if (triangle > 0){
+        square = (triangle + 1) / 2;
+        triangle = triangle - square;
+        dot = Const1;
+        dot_2 = Const3 + square; 
+        right_z(Size, dot, dot_2,square, triangle, n, (int (*)[n]) m);
+        dot = i + 1;
+        dot_2 = j + square - 1;
+        right_z(Size, dot, dot_2,square, triangle, n, (int (*)[n]) m);
+    }
+}
+void reversed_right_z(int Size, int dot, int dot_2, int square, int triangle, int n, int (*m)[n]){
+    int Const1, Const2, Const3, Const4, triangle_Const;
+    int i = dot, j = dot_2;
+    for (int k = 0; k != square; ++k){
+        printf("%d ", m[i][j]);
+        ++j;
+    }
+    if (((square + 1) / 2) > 0) {
+        --j;
+        for (int k = 0; k != (square - 1); ++k){
+            --j;
+            --i;
+            printf("%d ", m[i][j]); 
+        }
+        for (int k = 0; k != (square - 1); ++k){
+            ++j;
+            printf("%d ", m[i][j]);
+        }    
+        Const1 = dot;
+        Const3 = dot_2;
+        Const4 = Size;
+        Size = square;
+        square = ((square - 1) / 2);
+        dot = dot - 1;
+        dot_2 = dot_2 + square - 1;
+        triangle_Const = triangle;
+        triangle = Size - square - 2;
+        if (square > 0){
+            reversed_left_z(Size, dot, dot_2, square, triangle, n, (int (*)[n]) m);
+            dot = i + 1;
+            dot_2 = j - square + 1;
+            left_z(Size, dot, dot_2, square, triangle, n, (int (*)[n]) m);
+        }
+    }
+    triangle = triangle_Const;
+    if (triangle > 0){
+        square = (triangle + 1) / 2;
+        triangle = triangle - square;
+        dot = Const1;
+        dot_2 = Const3 - square;
+        reversed_right_z(Size, dot, dot_2, square, triangle, n, (int (*)[n]) m);
+        dot = i - 1;
+        dot_2 = j - square + 1;
+        reversed_right_z(Size, dot, dot_2, square, triangle, n, (int (*)[n]) m);
+    }
+}
+void left_z(int Size, int dot, int dot_2, int square, int triangle, int n, int (*m)[n]){
+    int Const1, Const2, Const3, Const4, triangle_Const;
+    int i = dot, j = dot_2;
+    for (int k = 0; k != square; ++k){
+        printf("%d ", m[i][j]);
+        ++j;
+    }
+    if (((square + 1) / 2) > 0) {
+        --j;
+        for (int k = 0 ; k != (square - 1); ++k){
+            --j;
+            ++i;
+            printf("%d ", m[i][j]);    
+        }
+        for (int k = 0; k != (square - 1); ++k){
+            ++j;
+            printf("%d ", m[i][j]);
+        }
+        Const1 = dot;
+        Const2 = dot_2;
+        Const4 = Size;
+        Size = square;
+        square = ((square - 1) / 2);
+        dot_2 = dot_2 + square - 1;
+        dot = dot + 1 ;
+        triangle_Const = triangle;
+        triangle = Size - square - 2;
+        if (square > 0){
+            right_z(Size, dot, dot_2, square, triangle, n, (int (*)[n]) m);
+            dot = i - 1;
+            dot_2 = j - square + 1;
+            reversed_right_z(Size, dot, dot_2, square, triangle, n, (int (*)[n]) m);
+        }
+    }
+    triangle = triangle_Const;
+    if (triangle > 0){
+        square = (triangle + 1) / 2;
+        triangle = triangle - square;  
+        dot = Const1;
+        dot_2 = Const2 - square;
+        left_z(Size, dot, dot_2, square, triangle, n, (int (*)[n]) m);
+        dot = i + 1;
+        dot_2 = j - square + 1;
+        left_z(Size, dot, dot_2, square, triangle, n, (int (*)[n]) m);
+    }
+}
+void reversed_left_z(int Size, int dot, int dot_2, int square, int triangle, int n, int (*m)[n]){
+    int Const1, Const2, Const3, Const4, triangle_Const;
+    int i = dot, j = dot_2;
+    for (int k = 0; k != square; ++k){
+        printf("%d ", m[i][j]);
+        --j;
+    }
+    if (((square + 1) / 2) > 0) {
+        ++j;
+        for (int k = 0; k != (square - 1); ++k){
+            ++j;
+            --i;
+            printf("%d ", m[i][j]); 
+        }
+        for (int k = 0; k != (square - 1); ++k){
+            --j;
+            printf("%d ", m[i][j]);
+        }
+        Const1 = dot;
+        Const2 = dot_2;
+        Const4 = Size;
+        Size = square;
+        square = ((square - 1) / 2);
+        dot_2 = dot_2 - square + 1;
+        dot = dot - 1;
+        triangle_Const = triangle;
+        triangle = Size - square - 2;
+        if (square > 0){
+            reversed_right_z(Size, dot, dot_2, square, triangle, n, (int (*)[n]) m);
+            dot = i + 1;
+            dot_2 = j + square - 1;
+            right_z(Size, dot, dot_2, square, triangle, n, (int (*)[n]) m);
+        }
+    }
+    triangle = triangle_Const;
+    if (triangle > 0){
+        square = (triangle + 1) / 2;
+        triangle = triangle - square;
+        dot = Const1;
+        dot_2 = Const2 + square;
+        reversed_left_z(Size, dot, dot_2,square, triangle, n, (int (*)[n]) m);
+        dot = i - 1;
+        dot_2 = j + square - 1;   
+        reversed_left_z(Size, dot, dot_2,square, triangle, n, (int (*)[n]) m);  
+    }
+}
+
+```
 ## 11. Выводы
 Была изучена работа с квадратными матрицами на языке Си.
   
