@@ -388,3 +388,4 @@ void reversed_left_z(int Size, int dot, int dot_2, int square, int triangle, int
 ## 11. Выводы
 Была изучена работа с квадратными матрицами на языке Си.
   
+<b>Подпись студента:</b> ____________________
