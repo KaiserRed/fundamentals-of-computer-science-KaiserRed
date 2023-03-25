@@ -4,6 +4,11 @@ import pathlib
 
 print("Declare suffix of the file")
 suffix = input()
+if (suffix == '?'):
+    print("This code allows you to delete all files with specified suffix and modification date. To do this type suffix and then type the last date of modification. If files are existing they will be deleted, else they aren't")
+    print("Declare suffix of the file")
+    suffix = input()
+    
 suffix = '.' + suffix 
 print ('Declare how old files are allowed to be and set the root directory')
 days = int(input())
