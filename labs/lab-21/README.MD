@@ -79,6 +79,11 @@ import pathlib
 
 print("Declare suffix of the file")
 suffix = input()
+if (suffix == '?'):
+    print("This code allows you to delete all files with specified suffix and modification date. To do this type suffix and then type the last date of modification. If files are existing they will be deleted, else they aren't")
+    print("Declare suffix of the file")
+    suffix = input()
+    
 suffix = '.' + suffix 
 print ('Declare how old files are allowed to be and set the root directory')
 days = int(input())
@@ -149,9 +154,12 @@ alexey@alexey-VirtualBox:~$ ls
 | 1 | дом. | 08.12.22 | 17:00 | Выполнение лабораторной работы | - | - |    
 ## 10. Замечания автора по существу работы
 По ходу защиты лабораторной работы было дано задание из Codeforces:
-
+Защита с Codeforces (div 2)
+https://codeforces.com/contest/1809/submission/198778410
+Дорешка
+https://codeforces.com/contest/1809/submission/199044848
 
 ## 11. Выводы
-Были изучены способы работы и изменений файлов через интерпретируемый командный язык Bash и через Python.  
+Были изучены способы работы и изменений файлов через интерпретируемый командный язык Bash и через Python. Были изучены проверки суффиксов у файлов и дата их последнего изменения  
 
 <b>Подпись студента:</b> ____________________
