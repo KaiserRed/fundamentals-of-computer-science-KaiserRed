@@ -38,11 +38,18 @@
 Печатаем суффикс, а потом количество дней. С помощью команды find и флажков -name ```"*$a" -mmin -"$b" -delete``` удаляем все файлы с заданным суффиксом и которым не обращались заданное количество дней.
 
 ## 7. Сценарий выполнения работы
-1. Изучаем команду find с его флажками       
-2. Создаём bash скрипт      
-3. Делаем проверки входных данных    
-4. Делаем рабочий скрипт   
-
+Bash: 
+1. Изучаем команду find с его флажками.       
+2. Создаём bash скрипт.      
+3. Делаем проверки входных данных.    
+4. Делаем рабочий скрипт.   
+Python    
+1. Изучаем библиотеки os, time, pathlib
+2. Задаём суффикс файла и время его изменения.   
+3. Проходим по директории. Когда замечаем файл с заданным суффиксом и заданным временем изменения выписываем его, чтобы узнать, что удаляется, и удаляем его.   
+4. Если таких файлов нет, то пишем об этом.    
+    
+Bash
 ```
 #!/bin/bash
 
@@ -63,13 +70,76 @@ find . -type f -name "*$a" -mtime +"$b" -delete
 # -mmin +n - minutes
 # -mtime +n - days
 ```
+    
+Pyhon
+```
+import os
+import time
+import pathlib
+
+print("Declare suffix of the file")
+suffix = input()
+suffix = '.' + suffix 
+print ('Declare how old files are allowed to be and set the root directory')
+days = int(input())
+days_ago = time.time() - (days * 86400)
+root = "/home/alexey/"
+count = 0
+for i in os.listdir(root):
+    path = os.path.join(root, i)
+    if ((os.stat(path).st_mtime <= days_ago) and (pathlib.PurePath(path).suffix == suffix)):
+        if os.path.isfile(path):
+            print(pathlib.PurePath(path).name)
+            os.remove(path)
+            count+=1
+if (count == 0):
+    print('Could not remove file')
+                                           
+```
 
 Пункты 1-7 отчета составляются строго до начала лабораторной работы.
 Допущен к выполнению работы.  
 <b>Подпись преподавателя</b> ________________
 ### 8. **Протокол**
 ```
+alexey@alexey-VirtualBox:~$ ls
+ 1.c      code1.c   horner.c    snap      x4.txt      Изображения     Шаблоны
+'1 sem'   code.c    out.txt     test2.c   Видео       Музыка
+ 1.txt    he.c      p.py        test.c    Документы   Общедоступные
+ a.out    hello.c   script.sh   x4        Загрузки   'Рабочий стол'
 
+alexey@alexey-VirtualBox:~$ python3 p.py
+Declare suffix of the file
+txt
+Declare how old files are allowed to be and set the root directory
+3
+x4.txt
+out.txt
+
+alexey@alexey-VirtualBox:~$ ls
+ 1.c      code1.c   horner.c    test2.c   Документы     Общедоступные
+'1 sem'   code.c    p.py        test.c    Загрузки     'Рабочий стол'
+ 1.txt    he.c      script.sh   x4        Изображения   Шаблоны
+ a.out    hello.c   snap        Видео     Музыка
+
+```
+```
+alexey@alexey-VirtualBox:~$ ls
+ 1.c      code1.c   horner.c    snap      x4.txt      Изображения     Шаблоны
+'1 sem'   code.c    out.txt     test2.c   Видео       Музыка
+ 1.txt    he.c      p.py        test.c    Документы   Общедоступные
+ a.out    hello.c   script.sh   x4        Загрузки   'Рабочий стол'
+
+alexey@alexey-VirtualBox:~$ bash script.sh
+Type suffix = txt
+Type time = 3
+alexey@alexey-VirtualBox:~$ 
+
+alexey@alexey-VirtualBox:~$ ls
+ 1.c      code1.c   horner.c    test2.c   Документы     Общедоступные
+'1 sem'   code.c    p.py        test.c    Загрузки     'Рабочий стол'
+ 1.txt    he.c      script.sh   x4        Изображения   Шаблоны
+ a.out    hello.c   snap        Видео     Музыка
 
 ```
 ## 9. Дневник отладки должен содержать дату и время сеансов отладки и основные события (ошибки в сценарии и программе, нестандартные ситуации) и краткие комментарии к ним. В дневнике отладки приводятся сведения об использовании других ЭВМ, существенном участии преподавателя и других лиц в написании и отладке программы.
@@ -78,7 +148,7 @@ find . -type f -name "*$a" -mtime +"$b" -delete
 | ------ | ------ | ------ | ------ | ------ | ------ | ------ |
 | 1 | дом. | 08.12.22 | 17:00 | Выполнение лабораторной работы | - | - |    
 ## 10. Замечания автора по существу работы
-По ходу защиты лабораторной работы было дано задание:
+По ходу защиты лабораторной работы было дано задание из Codeforces:
 
 
 ## 11. Выводы
