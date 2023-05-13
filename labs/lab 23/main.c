@@ -41,11 +41,11 @@ int main() {
                 break;
             }
             case 5: {
-                Pre_Order(t->root, 0);
+                preOrder(t->root, 0);
                 break;
             }
             case 6: {
-                Post_Order(t->root);
+                postOrder(t->root);
                 break;
             }
             case 7: {

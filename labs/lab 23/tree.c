@@ -75,7 +75,7 @@ void delete_node(Tree *tree, float f) {
     free(t);
 }
 
-void Delete(node *t){
+void delete(node *t){
     if (t->son != NULL)
         Delete(t->son);
     if (t->brother != NULL)
@@ -83,20 +83,20 @@ void Delete(node *t){
     free(t); 
 }
 
-void Pre_Order(node *t, int x){
+void preOrder(node *t, int x){
     if (t == NULL)
         return;
     for (int i = 0; i < x; i++)
         printf("\t");
     printf("%-.2f\n", t->value);
-    Pre_Order(t->son, x + 1);
-    Pre_Order(t->brother, x);
+    preOrder(t->son, x + 1);
+    preOrder(t->brother, x);
 }
 
-void Post_Order(node *t){
+void postOrder(node *t){
     if (t == NULL)
         return;
-    Post_Order(t->son);
+    postOrder(t->son);
     printf("%-.2f\n", t->value);
-    Post_Order(t->brother);
+    postOrder(t->brother);
 }

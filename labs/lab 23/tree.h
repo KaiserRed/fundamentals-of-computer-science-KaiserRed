@@ -18,8 +18,7 @@ Tree *create_tree(float f);
 node *search_tree(node *t, float f);
 void add_node_in_tree(Tree *tree, float par_f, float f);
 void delete_node(Tree *tree, float f);
-void Delete(node *t);
-void Pre_Order(node *t, int x);
-void Post_Order(node *t);
-void In_Order(node *t);
+void delete(node *t);
+void preOrder(node *t, int x);
+void postOrder(node *t);
 #endif
