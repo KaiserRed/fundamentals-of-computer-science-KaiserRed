@@ -54,6 +54,22 @@
 
 ## 7. Сценарий выполнения работы
 ```
+alexey@alexey-Yoga-Slim-7-Pro-14IHU5:~/code/fundamentals-of-computer-science-KaiserRed/CP/Cp8$ ./main
+Size = 4
+1	4	9	10
+	Set 99 in 2
+1	99	9	10
+	Swap k-1 and k+1. k = 2
+9	99	1	10
+	Insert after 2
+9	99	1	1	10
+9	99	1	10
+Head  = 9
+Tail = 10
+9	99	1	10
+	Swap k-1 and k+1. k = 3
+9	10	1	99
+alexey@alexey-Yoga-Slim-7-Pro-14IHU5:~/code/fundamentals-of-computer-science-KaiserRed/CP/Cp8$
 
 ```
 Пункты 1-7 отчета составляются строго до начала лабораторной работы.
