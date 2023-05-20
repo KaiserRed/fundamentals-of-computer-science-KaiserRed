@@ -21,8 +21,10 @@ int main(void) {
     i = listIteratorBegin(&b);
     listIteratorNext(&i);
     printf("\tInsert after 2\n");
-    listIteratorAfterInsert(&b, &i, 1);
+    listIteratorAfterInsert(&b, &i, 3);
+    printf("Size = %ld\n", listSize(&b));
     printList(&b);
+    printf("\tRemove after 2\n");
     listIteratorRemove(&b, &i);
     printList(&b);
     printf("Head  = %d\n", listFront(&b));
@@ -31,5 +33,10 @@ int main(void) {
     printf("\tSwap k-1 and k+1. k = 3\n");
     task(&b, 3);
     printList(&b);
+    task(&b, 4);
+    printList(&b);
+    task(&b, 1);
+    printList(&b);
+    printf("Size = %ld\n", listSize(&b));
     listDestroy(&b);
 }

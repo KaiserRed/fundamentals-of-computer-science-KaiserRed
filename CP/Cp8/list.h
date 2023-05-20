@@ -61,6 +61,6 @@ void listDestroy(List *list);
 
 void printList(List *list);
 
-void task(List *list, int k);
+bool task(List *list, int k);
 
 #endif // LIST_H

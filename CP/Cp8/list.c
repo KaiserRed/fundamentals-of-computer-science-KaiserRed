@@ -133,27 +133,33 @@ void printList(List *list){
 
 }
 
-void task(List *list, int k){
+bool task(List *list, int k){
     int t = 0;
     ListIterator i;
     int left = 0, right = 0;
-    for (i = listIteratorBegin(list); t != k+1 ; listIteratorNext(&i)){
-        ++t;
-        if (t == k - 1)
-            left = listIteratorGet(&i);
-        if (t == k + 1){
-            right = listIteratorGet(&i);
-            listIteratorSet(&i, left);
-        }
+    if ((k >= (int)listSize(list)) || k <= 1){
+        printf("Incorrect k\n");
+        return false;
     }
-    t = 0;
-    for (i = listIteratorBegin(list); t != k ; listIteratorNext(&i)){
-        ++t;
-        if (t == k - 1){
-            listIteratorSet(&i, right);       
+    else{
+        for (i = listIteratorBegin(list); t != k+1 ; listIteratorNext(&i)){
+            ++t;
+            if (t == k - 1)
+                left = listIteratorGet(&i);
+            if (t == k + 1){
+                right = listIteratorGet(&i);
+                listIteratorSet(&i, left);
+            }
         }
+        t = 0;
+        for (i = listIteratorBegin(list); t != k ; listIteratorNext(&i)){
+            ++t;
+            if (t == k - 1){
+                listIteratorSet(&i, right);       
+            }
+        }
+        left = right = 0;
+        return true;
     }
-    left = right = 0;
-
 }
 
