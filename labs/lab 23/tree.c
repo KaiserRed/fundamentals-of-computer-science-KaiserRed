@@ -57,7 +57,7 @@ void delete_node(Tree *tree, float f) {
         return;
     if (t->parent == NULL){
         if (t->son != NULL)
-            Delete(t->son); 
+            delete(t->son); 
         free(t);
         return;
     }
@@ -71,15 +71,15 @@ void delete_node(Tree *tree, float f) {
         tr->brother = t->brother;
     }
     if (t->son != NULL)
-        Delete(t->son);
+        delete(t->son);
     free(t);
 }
 
 void delete(node *t){
     if (t->son != NULL)
-        Delete(t->son);
+        delete(t->son);
     if (t->brother != NULL)
-        Delete(t->brother);
+        delete(t->brother);
     free(t); 
 }
 
