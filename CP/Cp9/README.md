@@ -221,9 +221,9 @@ gcc  main.o data.o table.o  -o main
 ## 10. Замечания автора по существу работы
 По ходу защиты лабораторной работы было дано задание из Codeforces:     
 Защита с Codeforces (div 2)     
-https://codeforces.com/contest/1828/submission/205881296       
-Дорешка
-https://codeforces.com/contest/1828/submission/209167967      
+[1828A](https://codeforces.com/contest/1828/submission/205881296)              
+Дорешка       
+[1828B](https://codeforces.com/contest/1828/submission/209167967)      
 ## 11. Выводы
 После выполнения работы были изучены способы работы с комплексными числами, сортировками и бинарным поиском. 
 <b>Подпись студента:</b> ____________________
