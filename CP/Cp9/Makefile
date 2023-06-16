@@ -3,7 +3,7 @@ RM=rm -fr
 CFLAGS=-Wall -Werror -Wextra -Wfatal-errors -Wpedantic -pedantic-errors -std=c18
 LDFLAGS=
 LDLIBS=
-SOURCES=main.c data.c util.c vector.c table.c
+SOURCES=main.c data.c table.c
 OBJECTS=$(SOURCES:.c=.o)
 EXECUTABLE=main
 

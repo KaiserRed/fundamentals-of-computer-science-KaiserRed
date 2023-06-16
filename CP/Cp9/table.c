@@ -1,100 +1,90 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <stddef.h>
-#include "vector.h"
-#include "util.h"
-#include "string.h"
-#include "data.h"
 #include "table.h"
 
-
-char *inputString(FILE* fp){
-    size_t size = 16;
-    char *str;
-    int ch;
-    size_t len = 0;
-    str = malloc(size);
-    if (!str) return str;
-    while((ch=fgetc(fp)) != '\n'){
-        if (ch == EOF) {
-            if (len==0) {
-                free(str);
-                return NULL;
-            }
-            else break;
-        };
-        str[len++]=ch;
-        if(len==size) {
-            str = realloc(str, size*=2);
-            if (!str) return str;
-        }
+int tableFread(line table[], FILE* in){
+    int i = 0;
+    while (!feof(in)){
+        complex_fread(&(table[i].key), in);
+        fgets(table[i].str, MAX_STRING_SIZE, in);
+        ++i;
     }
-    str[len++]='\0';
-    return realloc(str, len);
+    return i;
 }
-void read(Vector * vtable){
-    FILE *table_txt=fopen("file.txt","r");
-    if (!table_txt) exit(EXIT_FAILURE);
-    char *str;
-    for (;;) {
-        str = inputString(table_txt);
-        if (!str) break;
-        char *val;
-        size_t i = 0;
-        bool comma_is_found=false;
-        while (str[i]!='\0') {
-            if (str[i]==';' && i < KEY_SIZE) {
-                str[i]='\0';
-                val = str+i+1;
-                comma_is_found = true;
-                break;
-            }
-            ++i;
-        }
-        if (!comma_is_found) exit(EXIT_FAILURE);
-        char *key = str;
-        size_t val_size = strlen(val)+1;
-        size_t real_key_size = strlen(key)+1;
-        Data *line = malloc(sizeof(Data)+val_size);
-        memcpy(line->key,key,real_key_size);
-        memcpy(line->data,val,val_size);
-        vectorPushBack(vtable, line);
-        free(str);
+void tablePrint(line table[], int size){
+    for (int i = 0; i < size; ++i){
+        complex_print(table[i].key);
+        printf(" %s", table[i].str);
     }
-    fclose(table_txt);
-
 }
-void print_table(
-    Data ** table,
-    const size_t length
-){
-    for (size_t i=0;i < length;++i){
-        printf("%s %s\n",table[i]->key,table[i]->data);
-    }
-    printf("---------\n");
+void swap(line* l1, line* l2){
+    line tmp = *l1;
+    *l1 = *l2;
+    *l2 = tmp;
 }
-
-void print_binary_Search(
-    Data ** table,
-    const size_t length
-) {
-    for (;;) {
-        char *str;
-        str = inputString(stdin);
-        if (!str) break;
-        Data **res = binarySearch(&str,table,length,sizeof(Data*),cmpStrWithData);
-        if (str[0] == '.'){ 
-            printf("\n");
-            break;
-        }
-        else if (!res)  printf("\n");
-        else {
-            Data **end = table + length;
-            while (res != end && cmpStrWithData(&str, res) == 0) {
-                printf("%s %s\n", (*res)->key,(*res)->data);
-                ++res;
+void bubbleSort(line table[], int size){
+    for (int i = 0; i < size - 1; ++i){
+        for (int j = 0; j < size - 1; ++j){
+            if (complex_less(table[j+1].key, table[j].key)){
+                swap(table + j, table + j + 1);
             }
         }
-        free(str);
+    }
+}
+
+void binarySearch(line table[], int size, complex k){
+    int left = 0, right = size, mid;
+    while(left < right){
+        mid = left + (right - left) / 2;
+
+        if(complex_less(k, table[mid].key)) right = mid;
+        else left = mid + 1;
+    }
+
+    if(complex_is_equal(table[--right].key, k)){
+        complex_print(k);
+        printf("  %s\n", table[right].str);
+    }
+    else{
+        printf("Key not found\n");
+    }
+}
+
+void lowerBound(line table[], int N, complex k){
+    int mid, low = 0, high = N;
+    while (low < high){
+        mid = low + (high - low) / 2;
+        if (complex_less(k, table[mid].key) || complex_is_equal(k, table[mid].key))
+            high = mid;
+        else
+            low = mid + 1;
+    }
+    if (low < N && complex_less(table[low].key, k))
+        low++;
+    complex_print(table[low].key);
+}
+
+void upperBound(line table[], int N, complex k){
+    int mid, low = 0, high = N;
+    while (low < high){
+        mid = low + (high - low) / 2;
+        if (complex_less(k, table[mid].key))
+            high = mid;
+        else
+            low = mid + 1;
+    }
+    if (low < N && (complex_less(table[low].key, k)))
+        low++;
+    complex_print(table[low].key);
+}
+
+void tableReverse(line table[], int size){
+    for(int i = 0; i < size / 2; ++i){
+        swap(table + i, table + size - 1 - i);
+    }
+}
+
+void tableRandom(line table[], int size){
+    for(int  i = 0; i < size; ++i){
+        int j = rand() % size;
+        swap(table +i, table + j);
     }
 }

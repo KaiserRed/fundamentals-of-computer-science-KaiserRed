@@ -1,66 +1,74 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <stddef.h>
-#include "vector.h"
-#include "util.h"
-#include "string.h"
-#include "data.h"
 #include "table.h"
+#include "data.h"
 
+#include <stdlib.h>
 
-int main() {
-    Vector vtable;
-    vectorCreate(&vtable);
-    read(&vtable);  
-    Data ** table = vectorData(&vtable);
-    size_t lines_count = vectorSize(&vtable);
+int main(){
+    FILE *in=fopen("file.txt","r");
+    if (!in) exit(EXIT_FAILURE);
+    line* table = (line*)malloc(MAX_STRING_SIZE*sizeof(line));
+    int size = tableFread(table, in);
     int choose, g = 1;
-    while (g) {
-        printf("1. Print table\t 2. Bubble sort\t 3. Reverse\t 4. Binary search\t5. Equal_range\t 6. Lower_bound\t 7. Upper_bound\t 8. Exit \n");
+    while(g){
+        printf("\n1. Print table\t 2. Bubble sort\t 3. Random\t 4. Reverse\t 5. BinarySearch\t 6. lowerBound\t 7. upperBound\t 8. equalRange\t 9. Exit\n");
         scanf("%d", &choose);
-        switch (choose) {
+        switch(choose){
             case 1: {
-                print_table(table,lines_count);
+                tablePrint(table, size);
                 break;
             }
             case 2: {
-                printf("Table before sort\n");
-                print_table(table,lines_count);
-                printf("Table after sort\n");
-                bubbleSort(table, lines_count,sizeof(Data*)); 
-                print_table(table,lines_count);
+                printf("\nBefore:\n");
+                tablePrint(table, size);
+                bubbleSort(table, size);
+                printf("\nAfter:\n");
+                tablePrint(table, size);
                 break;
             }
-            case 3: {
-                reverse(table,lines_count,sizeof(Data*));
+            case 3: { 
+                tableRandom(table, size);
                 break;
             }
             case 4: {
-                print_binary_Search(table, lines_count);
+                tableReverse(table, size);
                 break;
             }
             case 5: {
-                Pair res = equalRange(&(char*){"0+2i"},table,lines_count,sizeof(Data*),cmpData);
-                printf("%s, %s\n",(*(Data**)res.first)->data,(*(Data**)res.second)->data);
+                complex z;
+                complex_read(&z);
+                binarySearch(table, size, z);
                 break;
             }
             case 6: {
-                printf("%s\n",(*(Data**)lowerBound(&(char*){"0+2i"},table,lines_count,sizeof(Data*),cmpData))->data);
+                complex z;
+                complex_read(&z);
+                lowerBound(table, size, z);
                 break;
             }
             case 7: {
-                printf("%s\n",(*(Data**)upperBound(&(char*){"0+2i"},table,lines_count,sizeof(Data*),cmpData))->data);
+                complex z;
+                complex_read(&z);
+                upperBound(table, size, z);
                 break;
-            }              
+            }
             case 8: {
+                complex z;
+                complex_read(&z);    
+                lowerBound(table, size, z);
+                printf("\t");
+                upperBound(table, size, z);
+                break;
+            }
+            case 9: {
                 g = 0;
                 break;
             }
             default: {
-                printf("Wrong answer\n");
+                printf("Wrong command\n");
             }
         }
     }
-    vectorDestroy(&vtable);
+    fclose(in);
+    free(table);
     return 0;
 }

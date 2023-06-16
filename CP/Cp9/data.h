@@ -1,18 +1,31 @@
 #ifndef _DATA_H
 #define _DATA_H
 
-#include <stdio.h>
 #include <stdbool.h>
+#include <stdio.h>
 
-#define KEY_SIZE (16U)
+#define MAX_STRING_SIZE 100
 
 typedef struct{
-    char key[KEY_SIZE];
-    char data[];
-} Data;
+    double real;
+    double imaginary;
+} complex;
 
-int cmpData(const void * const a, const void * const b);
+typedef struct{
+    complex key;
+    char str[MAX_STRING_SIZE];
+} line;
 
-int cmpStrWithData(const void * const a, const void * const b);
+bool complex_read(complex*);
+
+bool complex_fread(complex*, FILE*);
+
+bool complex_is_equal(complex, complex);
+
+bool complex_less(complex, complex);
+
+void complex_print(complex);
+
+//void complex_set(complex*, double, double);
 
 #endif
