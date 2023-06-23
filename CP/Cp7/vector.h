@@ -27,7 +27,7 @@ bool vectorIsEmpty(const Vector *vector);
 
 double vectorPopBack(Vector *vector);
 
-double vectorPushBack(Vector *vector, double value);
+void vectorPushBack(Vector *vector, double value);
 
 void vectorResize(Vector *vector, size_t newSize);
 

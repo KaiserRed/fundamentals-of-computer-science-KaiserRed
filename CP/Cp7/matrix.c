@@ -1,5 +1,7 @@
 #include "matrix.h"
 #include <limits.h>
+#include <assert.h>
+
 
 Matrix *matrixCreate(){
     Matrix *matrix = malloc(sizeof(Matrix));
@@ -25,6 +27,7 @@ void matrixDestroy(Matrix *mat){
     vectorDestroy(mat->CIP);
     vectorDestroy(mat->PI);
     vectorDestroy(mat->YE);
+    free(mat);
 }
 
 bool matrixFread(Matrix *mat, FILE* in){
@@ -134,8 +137,8 @@ void matrixSet(Matrix *mat, size_t i, size_t j, double value){
     }
 }
 
-int matrixGet(Matrix *mat, size_t i, size_t j){
-    int result = 0;
+double matrixGet(Matrix *mat, size_t i, size_t j){
+    double result = 0;
     int curRowPi = mat->CIP->data[i];
     int nextRowPi;
     if (i == (mat->n - 1)) {
@@ -185,35 +188,35 @@ void matrixTask(Matrix *mat, int num){
         }
     }
     printf("Nearest number: %f\n", nearNum);
-    for (int i = 0; i < (int)vectorSize(columns);++i){
+
+    int lenCIP = mat->CIP->size;
+    for (int i = 0; i < (int)vectorSize(rows);++i){
         for (int j = 0; j < (int)mat->PI->size;++j){
-            if (mat->PI->data[j] - 1 == vectorGet(columns, i)){
+            if (mat->PI->data[j] - 1  == vectorGet(columns, i) && mat->YE->data[j] != nearNum){
                 mat->YE->data[j] = mat->YE->data[j] / nearNum; 
             }
         }
-    }
-    int lenCIP = mat->CIP->size;
-    for (int i = 0; i < (int)vectorSize(rows);++i){
         int curRowPi = vectorGet(rows, i);
         int j = 0;
         int next = 0, prev = 0;
         while (mat->CIP->data[j] < curRowPi){
             ++j;
             next = mat->CIP->data[j];
-            prev = mat->CIP->data[j - 1];
+            if (j != 0)
+                prev = mat->CIP->data[j - 1];
             if (j > (int)mat->CIP->size){
                 next = mat->YE->size;
                 prev = mat->CIP->data[lenCIP - 1];
                 break;
-            }
-            
+            } 
         }
         while (prev != next){
-            if (mat->YE->data[prev]!= nearNum / 2)    
+            if (mat->YE->data[prev] != nearNum && mat->YE->data[prev] != 0)
+                //vectorSet(mat->YE, prev, mat->YE->data[prev] / nearNum);
                 mat->YE->data[prev] = mat->YE->data[prev] / nearNum; 
             ++prev;
         }
-    }
+    }  
     vectorDestroy(rows);
     vectorDestroy(columns);
 }

@@ -75,7 +75,7 @@ bool vectorIsEmpty(const Vector *vector);
 
 double vectorPopBack(Vector *vector);
 
-double vectorPushBack(Vector *vector, double value);
+void vectorPushBack(Vector *vector, double value);
 
 void vectorResize(Vector *vector, size_t newSize);
 
@@ -90,6 +90,7 @@ void vectorInsert(Vector *vector, size_t index, double value);
 void vectorPrint(const Vector *vector);
 
 void vectorPrintDouble(const Vector *vector);
+
 #endif // VECTOR_H
 ```
 vector.c    
@@ -100,8 +101,6 @@ vector.c
 #include <stdlib.h>
 
 #include "vector.h"
-
-static size_t newCapacity(size_t capacity);
 
 double vectorBack(const Vector * const vector, double * const value) {
     if (vector->size == 0)
@@ -132,6 +131,7 @@ double *vectorData(const Vector * const vector) {
 
 void vectorDestroy(Vector * const vector) {
     free(vector->data);
+    free(vector);
 }
 
 double vectorGet(
@@ -147,20 +147,9 @@ bool vectorIsEmpty(const Vector * const vector) {
     return vector->size == 0;
 }
 
-double vectorPushBack(Vector * const vector, const double value) {
-    assert(vector->capacity >= vector->size);
-    if (vector->capacity == vector->size) {
-        const size_t capacity = newCapacity(vector->capacity);
-        double * const data = realloc(vector->data, capacity * sizeof(double));
-        if (data == NULL)
-            return errno;
-        vector->data = data;
-        vector->capacity = capacity;
-    }
-    assert(vector->capacity > vector->size);
-
-    vector->data[vector->size++] = value;
-    return 0;
+void vectorPushBack(Vector * const vector, const double value) {
+    vectorResize(vector, vector->size + 1);
+    vectorSet(vector, vector->size - 1, value);
 }
 
 
@@ -173,7 +162,10 @@ double vectorPopBack(Vector * const vector) {
 
 void vectorResize(Vector * const vector, const size_t newSize) {
     vector->size = newSize;
-    vector->data = realloc(vector->data, sizeof(double) * vector->size);
+    if (newSize > vector->capacity){
+        vector->capacity = newSize;
+        vector->data = realloc(vector->data, sizeof(double) * vector->capacity);
+    }
 }
 
 double vectorSet(Vector * const vector, const size_t index, const double value) {
@@ -185,12 +177,6 @@ double vectorSet(Vector * const vector, const size_t index, const double value) 
 
 size_t vectorSize(const Vector * const vector) {
     return vector->size;
-}
-
-static size_t newCapacity(const size_t capacity) {
-    if (capacity == 0)
-        return 1;
-    return capacity <= SIZE_MAX / 2 ? capacity * 2 : SIZE_MAX;
 }
 
 void vectorInsert(Vector *vector, size_t index, double value){
@@ -241,7 +227,7 @@ void matrixPrintRaw(Matrix *mat);
 
 void matrixSet(Matrix *mat, size_t i, size_t j, double value);
 
-int matrixGet(Matrix *mat, size_t i, size_t j);
+double matrixGet(Matrix *mat, size_t i, size_t j);
 
 void matrixTask(Matrix *mat, int num);
 #endif // VECTOR_H
@@ -250,6 +236,8 @@ matrix.c
 ```
 #include "matrix.h"
 #include <limits.h>
+#include <assert.h>
+
 
 Matrix *matrixCreate(){
     Matrix *matrix = malloc(sizeof(Matrix));
@@ -275,6 +263,232 @@ void matrixDestroy(Matrix *mat){
     vectorDestroy(mat->CIP);
     vectorDestroy(mat->PI);
     vectorDestroy(mat->YE);
+    free(mat);
+}
+
+bool matrixFread(Matrix *mat, FILE* in){
+    if (!in) exit(EXIT_FAILURE);
+    int n, m = 0;
+    fscanf(in, "%d %d", &m, &n);
+    Vector *cip = mat->CIP, *pi = mat->PI, *ye = mat->YE;
+    matrixClear(mat);
+    mat->n = n;
+    mat->m = m;
+    for (int i = 0; i < n; ++i){
+        vectorPushBack(cip, (int)vectorSize(pi));
+        for (int j = 1; j <= m; ++j){
+            double el = 0;
+            fscanf(in, "%lf", &el);
+            if (el != 0){
+                vectorPushBack(pi, j);
+                vectorPushBack(ye, el);
+            }
+        }
+    }
+    vectorPushBack(pi, 0);
+    fclose(in);
+    return true;
+}
+
+void matrixPrint(Matrix *mat){
+    int n = mat->n;
+    int m = mat->m;
+    for (int i = 0; i < n; ++i){
+        int ptr = 1;
+        int curRowPi = mat->CIP->data[i];
+        int nextRowPi;
+        if (i == n - 1)
+            nextRowPi = (int)(vectorSize(mat->PI) - 1);
+        else
+            nextRowPi = mat->CIP->data[i + 1];
+        while (curRowPi != nextRowPi){
+            int curColumn = mat->PI->data[curRowPi];
+            double curValue = mat->YE->data[curRowPi];
+            while (ptr != curColumn){
+                printf("0\t");
+                ++ptr;
+            }
+            printf("%-.1lf\t", curValue);
+            ++ptr;
+            ++curRowPi;
+        }
+        while (ptr != (m +1)){
+            printf("0\t");
+            ++ptr;
+        }
+        putchar('\n');
+    }
+}
+
+void matrixPrintRaw(Matrix *mat){
+    printf("%ldx%ld\n", mat->m, mat->n);
+    printf("CIP: ");
+    vectorPrint(mat->CIP);
+    printf("PI: ");
+    vectorPrint(mat->PI);
+    printf("YE: ");
+    vectorPrintDouble(mat->YE);
+}
+
+void matrixSet(Matrix *mat, size_t i, size_t j, double value){
+    int n = mat->n;
+    int curRowPi = mat->CIP->data[i];
+    int nextRowPi;
+    if ((int)i == (n - 1)) {
+        nextRowPi = (int)(vectorSize(mat->PI) - 1);
+    } else {
+        nextRowPi = mat->CIP->data[i + 1];
+    }
+    if (curRowPi == nextRowPi) {
+        j++;
+        vectorInsert(mat->PI, curRowPi, (int)j);
+        vectorInsert(mat->YE, curRowPi, value);
+        for (size_t k = i + 1;(int)k < n;k++)
+            mat->CIP->data[k]++;
+    } else {
+        j++;
+        while ((int)j > mat->PI->data[curRowPi] && curRowPi != nextRowPi) {
+            curRowPi++;
+        }
+        if ((int)j == mat->PI->data[curRowPi] && curRowPi != nextRowPi) {
+            if (value == 0) {
+                mat->PI->size--;
+                mat->YE->size--;
+                for (int k = curRowPi;(size_t)k < mat->PI->size;k++) {
+                    mat->PI->data[k] = mat->PI->data[k + 1];
+                    mat->YE->data[k] = mat->YE->data[k + 1];
+                }
+                for (int k = i + 1;(size_t)k < mat->n;k++) 
+                    mat->CIP->data[k]--;
+            } else {
+                mat->YE->data[curRowPi] = value;
+            }
+        }
+        else {
+            vectorInsert(mat->PI, curRowPi, j);
+            vectorInsert(mat->YE, curRowPi, value);
+            for (size_t k = i + 1;(int)k < n;k++)
+                mat->CIP->data[k]++;
+        }
+    }
+}
+
+double matrixGet(Matrix *mat, size_t i, size_t j){
+    double result = 0;
+    int curRowPi = mat->CIP->data[i];
+    int nextRowPi;
+    if (i == (mat->n - 1)) {
+        nextRowPi = (int)(vectorSize(mat->PI) - 1);
+    } else {
+        nextRowPi = mat->CIP->data[i + 1];
+    }
+    j++;
+    for (;curRowPi != nextRowPi;curRowPi++) {
+        if (mat->PI->data[curRowPi] == (int)j)
+            result = mat->YE->data[curRowPi];
+    }
+    return result;
+}
+
+void matrixTask(Matrix *mat, int num){
+    Vector *rows = vectorCreate();
+    Vector *columns = vectorCreate();
+    int n = mat->n;
+    int diff = INT_MAX;
+    double nearNum = 0;
+    for (int i = 0; i < n; ++i){
+        int ptr = 1;
+        int curRowPi = mat->CIP->data[i];
+        int nextRowPi;
+        if (i == n - 1)
+            nextRowPi = (int)(vectorSize(mat->PI) - 1);
+        else
+            nextRowPi = mat->CIP->data[i + 1];
+        while (curRowPi != nextRowPi){
+            int curColumn = mat->PI->data[curRowPi];
+            int curValue = mat->YE->data[curRowPi];
+            if (diff > abs(curValue - num)){
+                vectorClear(rows);
+                vectorClear(columns);
+                vectorPushBack(columns, curColumn - 1);
+                vectorPushBack(rows, curRowPi + 1);
+                diff = abs(curValue - num);
+                nearNum = curValue;
+            }
+            else if (diff == abs(curValue - num)){
+                vectorPushBack(columns, curColumn - 1);
+                vectorPushBack(rows, curRowPi + 1);
+            }
+            ++ptr;
+            ++curRowPi;
+        }
+    }
+    printf("Nearest number: %f\n", nearNum);
+
+    int lenCIP = mat->CIP->size;
+    for (int i = 0; i < (int)vectorSize(rows);++i){
+        for (int j = 0; j < (int)mat->PI->size;++j){
+            if (mat->PI->data[j] - 1  == vectorGet(columns, i) && mat->YE->data[j] != nearNum){
+                mat->YE->data[j] = mat->YE->data[j] / nearNum; 
+            }
+        }
+        int curRowPi = vectorGet(rows, i);
+        int j = 0;
+        int next = 0, prev = 0;
+        while (mat->CIP->data[j] < curRowPi){
+            ++j;
+            next = mat->CIP->data[j];
+            if (j != 0)
+                prev = mat->CIP->data[j - 1];
+            if (j > (int)mat->CIP->size){
+                next = mat->YE->size;
+                prev = mat->CIP->data[lenCIP - 1];
+                break;
+            } 
+        }
+        while (prev != next){
+            if (mat->YE->data[prev] != nearNum && mat->YE->data[prev] != 0)
+                mat->YE->data[prev] = mat->YE->data[prev] / nearNum; 
+            ++prev;
+        }
+    }  
+    vectorDestroy(rows);
+    vectorDestroy(columns);
+}
+
+```
+main.c
+```
+#include "matrix.h"
+#include <limits.h>
+#include <assert.h>
+
+
+Matrix *matrixCreate(){
+    Matrix *matrix = malloc(sizeof(Matrix));
+    matrix->CIP = vectorCreate();
+    matrix->PI = vectorCreate();
+    matrix->YE = vectorCreate();
+    matrix->n = 0;
+    matrix->m = 0;
+    return matrix;
+}
+
+void matrixClear(Matrix *mat){
+    mat->n = 0;
+    mat->m = 0;
+    vectorClear(mat->CIP);
+    vectorClear(mat->PI);
+    vectorClear(mat->YE);
+}
+
+void matrixDestroy(Matrix *mat){
+    mat->n = 0;
+    mat->m = 0;
+    vectorDestroy(mat->CIP);
+    vectorDestroy(mat->PI);
+    vectorDestroy(mat->YE);
+    free(mat);
 }
 
 bool matrixFread(Matrix *mat, FILE* in){
@@ -467,67 +681,7 @@ void matrixTask(Matrix *mat, int num){
     vectorDestroy(rows);
     vectorDestroy(columns);
 }
-```
-main.c
-```
-#include <stdio.h>
-#include <stdbool.h>
-#include <string.h>
 
-#include "vector.h"
-#include "matrix.h"
-
-int main(){
-    int choose, g = 1;
-    Matrix *mat = matrixCreate();
-    char filename[40];
-    printf("Type filename: ");
-    scanf("%s", filename);
-    FILE *in=fopen(filename,"r");
-    if (!matrixFread(mat, in))
-        exit(EXIT_FAILURE);
-    while(g){
-        printf("1. Print matrix\t 2. Print CIP, PI, YE\t 3. Set\t 4. Get\t 5. Task\t 6. Exit\n");
-        scanf("%d", &choose);
-        switch(choose){
-            case 1: {
-                matrixPrint(mat);
-                break;
-            }
-            case 2: {
-                matrixPrintRaw(mat);                
-                break;
-            }
-            case 3: { 
-                size_t i, j;
-                int value;
-                scanf("%lu %lu %d", &i, &j, &value);
-                matrixSet(mat, i, j, value);
-                break;
-            }
-            case 4: {
-                size_t i, j;
-                scanf("%lu %lu", &i, &j);
-                printf("%d\n", matrixGet(mat, i, j));
-                break;
-            }
-            case 5: {
-                int value;
-                scanf("%d", &value);
-                matrixTask(mat, value);
-                break;
-            }
-            case 6: {
-                g = 0;
-                break;
-            }
-            default: {
-                printf("Wrong command\n");
-            }
-        }
-    }
-    return 0;
-}
 ```
 Makefile
 ```
@@ -584,88 +738,78 @@ gcc -Wall -Werror -Wextra -Wfatal-errors -Wpedantic -pedantic-errors -std=c18 -c
 gcc -Wall -Werror -Wextra -Wfatal-errors -Wpedantic -pedantic-errors -std=c18 -c matrix.c -o matrix.o
 gcc -Wall -Werror -Wextra -Wfatal-errors -Wpedantic -pedantic-errors -std=c18 -c vector.c -o vector.o
 gcc  main.o matrix.o vector.o  -o main
-alexey@alexey-Yoga-Slim-7-Pro-14IHU5:~/code/fundamentals-of-computer-science-KaiserRed/CP/Cp7$ ./main
-Type filename: t2.txt
-1. Print matrix	 2. Print CIP, PI, YE	 3. Set	 4. Get	 5. Task	 6. Exit
-1
-1.0	0	2.0	3.0	0	0	0	
-0	0	30.0	1.0	0	0	0	
-0	0	0	0	0	0	0	
-1.0	2.0	3.0	4.0	5.0	0	0	
-0	0	0	0	0	0	3.0	
-0	0	0	0	-1.0	0	0	
-2.0	0	3.0	0	0	0	0	
-1. Print matrix	 2. Print CIP, PI, YE	 3. Set	 4. Get	 5. Task	 6. Exit
-2
-7x7
-CIP: 0 3 5 5 10 11 12 
-PI: 1 3 4 3 4 1 2 3 4 5 7 5 1 3 0 
-YE: 1.0 2.0 3.0 30.0 1.0 1.0 2.0 3.0 4.0 5.0 3.0 -1.0 2.0 3.0 
-1. Print matrix	 2. Print CIP, PI, YE	 3. Set	 4. Get	 5. Task	 6. Exit
-4
-0 0
-1
-1. Print matrix	 2. Print CIP, PI, YE	 3. Set	 4. Get	 5. Task	 6. Exit
-5
-2
-Nearest number: 2.000000
-1. Print matrix	 2. Print CIP, PI, YE	 3. Set	 4. Get	 5. Task	 6. Exit
-1
-0.2	0	1.0	1.5	0	0	0	
-0	0	15.0	1.0	0	0	0	
-0	0	0	0	0	0	0	
-0.2	1.0	0.8	2.0	2.5	0	0	
-0	0	0	0	0	0	3.0	
-0	0	0	0	-1.0	0	0	
-1.0	0	0.8	0	0	0	0	
-1. Print matrix	 2. Print CIP, PI, YE	 3. Set	 4. Get	 5. Task	 6. Exit
-3
-0 0
-3
-1. Print matrix	 2. Print CIP, PI, YE	 3. Set	 4. Get	 5. Task	 6. Exit
-1
-3.0	0	1.0	1.5	0	0	0	
-0	0	15.0	1.0	0	0	0	
-0	0	0	0	0	0	0	
-0.2	1.0	0.8	2.0	2.5	0	0	
-0	0	0	0	0	0	3.0	
-0	0	0	0	-1.0	0	0	
-1.0	0	0.8	0	0	0	0	
-1. Print matrix	 2. Print CIP, PI, YE	 3. Set	 4. Get	 5. Task	 6. Exit
-2
-7x7
-CIP: 0 3 5 5 10 11 12 
-PI: 1 3 4 3 4 1 2 3 4 5 7 5 1 3 0 
-YE: 3.0 1.0 1.5 15.0 1.0 0.2 1.0 0.8 2.0 2.5 3.0 -1.0 1.0 0.8 
-1. Print matrix	 2. Print CIP, PI, YE	 3. Set	 4. Get	 5. Task	 6. Exit
-6
-alexey@alexey-Yoga-Slim-7-Pro-14IHU5:~/code/fundamentals-of-computer-science-KaiserRed/CP/Cp7$ ./main
+alexey@alexey-Yoga-Slim-7-Pro-14IHU5:~/code/fundamentals-of-computer-science-KaiserRed/CP/Cp7$ valgrind --leak-check=full ./main
+==16957== Memcheck, a memory error detector
+==16957== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==16957== Using Valgrind-3.18.1 and LibVEX; rerun with -h for copyright info
+==16957== Command: ./main
+==16957== 
 Type filename: t3.txt
 1. Print matrix	 2. Print CIP, PI, YE	 3. Set	 4. Get	 5. Task	 6. Exit
 1
-0	0	1.0	
+1.0	0	1.0	
 6.0	2.0	0	
-0	0	0	
-3.0	4.0	9.0	
+0	7.0	1.0	
+3.0	0	9.0	
+1. Print matrix	 2. Print CIP, PI, YE	 3. Set	 4. Get	 5. Task	 6. Exit
+2
+3x4
+CIP: 0 2 4 6 
+PI: 1 3 1 2 2 3 1 3 0 
+YE: 1.0 1.0 6.0 2.0 7.0 1.0 3.0 9.0 
+1. Print matrix	 2. Print CIP, PI, YE	 3. Set	 4. Get	 5. Task	 6. Exit
+4
+0 0
+1.0
+1. Print matrix	 2. Print CIP, PI, YE	 3. Set	 4. Get	 5. Task	 6. Exit
+3
+0 0
+5
+1. Print matrix	 2. Print CIP, PI, YE	 3. Set	 4. Get	 5. Task	 6. Exit
+1
+5.0	0	1.0	
+6.0	2.0	0	
+0	7.0	1.0	
+3.0	0	9.0	
+1. Print matrix	 2. Print CIP, PI, YE	 3. Set	 4. Get	 5. Task	 6. Exit
+2
+3x4
+CIP: 0 2 4 6 
+PI: 1 3 1 2 2 3 1 3 0 
+YE: 5.0 1.0 6.0 2.0 7.0 1.0 3.0 9.0 
 1. Print matrix	 2. Print CIP, PI, YE	 3. Set	 4. Get	 5. Task	 6. Exit
 5
 2
 Nearest number: 2.000000
 1. Print matrix	 2. Print CIP, PI, YE	 3. Set	 4. Get	 5. Task	 6. Exit
+5
+5
+Nearest number: 5.000000
+1. Print matrix	 2. Print CIP, PI, YE	 3. Set	 4. Get	 5. Task	 6. Exit
 1
-0	0	1.0	
-3.0	1.0	0	
-0	0	0	
-3.0	2.0	9.0	
+5.0	0	0.2	
+0.6	2.0	0	
+0	3.5	1.0	
+0.6	0	9.0	
 1. Print matrix	 2. Print CIP, PI, YE	 3. Set	 4. Get	 5. Task	 6. Exit
 2
 3x4
-CIP: 0 1 3 3 
-PI: 3 1 2 1 2 3 0 
-YE: 1.0 3.0 1.0 3.0 2.0 9.0 
+CIP: 0 2 4 6 
+PI: 1 3 1 2 2 3 1 3 0 
+YE: 5.0 0.2 0.6 2.0 3.5 1.0 0.6 9.0 
 1. Print matrix	 2. Print CIP, PI, YE	 3. Set	 4. Get	 5. Task	 6. Exit
 6
+==16957== 
+==16957== HEAP SUMMARY:
+==16957==     in use at exit: 0 bytes in 0 blocks
+==16957==   total heap usage: 37 allocs, 37 frees, 7,584 bytes allocated
+==16957== 
+==16957== All heap blocks were freed -- no leaks are possible
+==16957== 
+==16957== For lists of detected and suppressed errors, rerun with: -s
+==16957== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
 alexey@alexey-Yoga-Slim-7-Pro-14IHU5:~/code/fundamentals-of-computer-science-KaiserRed/CP/Cp7$ 
+
 ```
 ## 9. Дневник отладки должен содержать дату и время сеансов отладки и основные события (ошибки в сценарии и программе, нестандартные ситуации) и краткие комментарии к ним. В дневнике отладки приводятся сведения об использовании других ЭВМ, существенном участии преподавателя и других лиц в написании и отладке программы.
 

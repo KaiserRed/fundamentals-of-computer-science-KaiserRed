@@ -23,7 +23,7 @@ void matrixPrintRaw(Matrix *mat);
 
 void matrixSet(Matrix *mat, size_t i, size_t j, double value);
 
-int matrixGet(Matrix *mat, size_t i, size_t j);
+double matrixGet(Matrix *mat, size_t i, size_t j);
 
 void matrixTask(Matrix *mat, int num);
 #endif // VECTOR_H

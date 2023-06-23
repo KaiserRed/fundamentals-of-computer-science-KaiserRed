@@ -36,7 +36,7 @@ int main(){
             case 4: {
                 size_t i, j;
                 scanf("%lu %lu", &i, &j);
-                printf("%d\n", matrixGet(mat, i, j));
+                printf("%-.1lf\n", matrixGet(mat, i, j));
                 break;
             }
             case 5: {
@@ -54,5 +54,7 @@ int main(){
             }
         }
     }
+    matrixClear(mat);
+    matrixDestroy(mat);
     return 0;
 }

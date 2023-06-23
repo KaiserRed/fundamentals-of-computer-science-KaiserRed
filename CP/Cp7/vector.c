@@ -5,8 +5,6 @@
 
 #include "vector.h"
 
-static size_t newCapacity(size_t capacity);
-
 double vectorBack(const Vector * const vector, double * const value) {
     if (vector->size == 0)
         return EINVAL;
@@ -36,6 +34,7 @@ double *vectorData(const Vector * const vector) {
 
 void vectorDestroy(Vector * const vector) {
     free(vector->data);
+    free(vector);
 }
 
 double vectorGet(
@@ -51,20 +50,9 @@ bool vectorIsEmpty(const Vector * const vector) {
     return vector->size == 0;
 }
 
-double vectorPushBack(Vector * const vector, const double value) {
-    assert(vector->capacity >= vector->size);
-    if (vector->capacity == vector->size) {
-        const size_t capacity = newCapacity(vector->capacity);
-        double * const data = realloc(vector->data, capacity * sizeof(double));
-        if (data == NULL)
-            return errno;
-        vector->data = data;
-        vector->capacity = capacity;
-    }
-    assert(vector->capacity > vector->size);
-
-    vector->data[vector->size++] = value;
-    return 0;
+void vectorPushBack(Vector * const vector, const double value) {
+    vectorResize(vector, vector->size + 1);
+    vectorSet(vector, vector->size - 1, value);
 }
 
 
@@ -77,7 +65,10 @@ double vectorPopBack(Vector * const vector) {
 
 void vectorResize(Vector * const vector, const size_t newSize) {
     vector->size = newSize;
-    vector->data = realloc(vector->data, sizeof(double) * vector->size);
+    if (newSize > vector->capacity){
+        vector->capacity = newSize;
+        vector->data = realloc(vector->data, sizeof(double) * vector->capacity);
+    }
 }
 
 double vectorSet(Vector * const vector, const size_t index, const double value) {
@@ -89,12 +80,6 @@ double vectorSet(Vector * const vector, const size_t index, const double value) 
 
 size_t vectorSize(const Vector * const vector) {
     return vector->size;
-}
-
-static size_t newCapacity(const size_t capacity) {
-    if (capacity == 0)
-        return 1;
-    return capacity <= SIZE_MAX / 2 ? capacity * 2 : SIZE_MAX;
 }
 
 void vectorInsert(Vector *vector, size_t index, double value){
