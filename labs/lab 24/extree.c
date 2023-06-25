@@ -70,7 +70,7 @@ Node* ConstructExTree(char* postfix){
         return NULL;
     }
 
-    NodeStack* s = NewNodeStack(50);//
+    NodeStack* s = NewNodeStack(50);
 
     for(int i = 0; i < (int)strlen(postfix); ++i){
         if(IsOperator(postfix[i])){
@@ -281,10 +281,10 @@ void Solution(Node** root, Node** queue, Node** ancestors, char* ancFlag){
         Node* anc = ancestors[start];
         char flag = ancFlag[start++];
 
-        if((char)tmp -> data == '/' || (char)tmp -> data == '*'){
+        if((char)tmp ->data == '/' || (char)tmp -> data == '*'){
 
-            char* numerator = (char*)malloc(50*sizeof(char));//
-            char* denominator = (char*)malloc(50*sizeof(char));//
+            char* numerator = (char*)malloc(50*sizeof(char));
+            char* denominator = (char*)malloc(50*sizeof(char));
             memset(denominator, 0, 50);
             memset(numerator, 0, 50);
             int numInd = 0;

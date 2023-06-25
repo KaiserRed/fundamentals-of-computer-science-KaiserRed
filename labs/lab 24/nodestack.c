@@ -28,10 +28,7 @@ void NodePop(NodeStack* st){
 }
 
 Node* NodeTop(NodeStack* st){
-    //if(st -> top != -1){
     return st -> items[st -> top];
-    //}
-    //return EINVAL;
 }
 
 void FreeNodeStack(NodeStack* st){
