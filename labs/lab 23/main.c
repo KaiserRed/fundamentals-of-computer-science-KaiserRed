@@ -57,5 +57,7 @@ int main() {
             }
         }
     }
+    delete(t->root);
+    free(t);
     return 0;
 }
