@@ -25,8 +25,10 @@ int listBack(const List * const list) {
 }
 
 void listDestroy(List * const list) {
-    while (listSize(list) != 0){
+    size_t len = listSize(list);
+    while (len != 0){
         listPopFront(list);
+        len--;
     }
 } 
 

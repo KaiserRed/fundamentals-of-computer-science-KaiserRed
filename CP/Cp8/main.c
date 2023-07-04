@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include "list.h"
 
-int main(void) {
+int main() {
     List b;
     listCreate(&b);
     listPushFront(&b, 4);
@@ -39,4 +39,6 @@ int main(void) {
     printList(&b);
     printf("Size = %ld\n", listSize(&b));
     listDestroy(&b);
+    printf("Size after destroying = %ld\n", listSize(&b));
+    return 0;
 }
